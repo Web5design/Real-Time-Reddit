@@ -29,7 +29,8 @@ if (Meteor.is_client) {
     //why doesn't fetch work?
     r.forEach(function(reddit){
       v = reddit;
-      console.log(v['reddit']);
+      // console.log(v['reddit']);
+      console.log("check");
       dom = v['reddit']
     })
     
@@ -52,7 +53,9 @@ if (Meteor.is_server) {
       if(Reddit.find().count() == 0){
         Reddit.insert({reddit: data, item: "1"})
       } else {
-        Reddit.update({}, {reddit: data})
+        // Reddit.update({}, {reddit: data})
+        Reddit.remove({item: "1"})
+        Reddit.insert({reddit: data, item: "1"})
         console.log("check");
       }
     }).run();
@@ -61,7 +64,7 @@ if (Meteor.is_server) {
   Meteor.setInterval(function(){
     var options = {
       host: 'www.reddit.com',
-      // path: '/.json'
+      path: '/.json'
     };
     
     callback = function(response) {
@@ -70,13 +73,7 @@ if (Meteor.is_server) {
         str += chunk;
       });
       response.on('end', function () {
-
-        jsdom.env(str, [
-          'http://code.jquery.com/jquery-1.5.min.js'
-        ],
-        function(errors, window) {
-          update(window.$("body").html());
-        });
+        update(str);
       });
     }
     
