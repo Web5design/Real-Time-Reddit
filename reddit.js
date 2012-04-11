@@ -29,14 +29,11 @@ if (Meteor.is_client) {
     //why doesn't fetch work?
     r.forEach(function(reddit){
       v = reddit;
-      // console.log(v['reddit']);
-      console.log("check");
       dom = v['reddit']
     })
-    
-    // return dom
+    console.log("check");
+    Meteor.flush();
     return dom;
-    // return JSON.stringify(v);
   };
 }
 
@@ -64,7 +61,10 @@ if (Meteor.is_server) {
   Meteor.setInterval(function(){
     var options = {
       host: 'www.reddit.com',
-      path: '/.json'
+      path: '/.json',
+      headers: {
+        'User-Agent': 'titmonkey smcgee'
+      }
     };
     
     callback = function(response) {
@@ -73,6 +73,7 @@ if (Meteor.is_server) {
         str += chunk;
       });
       response.on('end', function () {
+        // console.log(str);
         update(str);
       });
     }
