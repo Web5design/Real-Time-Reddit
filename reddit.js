@@ -21,6 +21,30 @@ JSON.stringify = JSON.stringify || function (obj) {
 };
 
 if (Meteor.is_client) {
+  var update = function(data){
+    if(Reddit.find().count() == 0){
+      Reddit.insert({reddit: data, item: "1"})
+    } else {
+      // Reddit.update({}, {reddit: data})
+      Reddit.remove({item: "1"})
+      Reddit.insert({reddit: data, item: "1"})
+      console.log("check");
+    }
+  }
+  Meteor.setInterval(function(){
+    $.ajax({
+           url: "http://www.reddit.com/.json",
+           type: "GET",
+           dataType: "jsonp",
+           success: function(data){
+             update(data);
+           },
+           async: false,
+           jsonp: 'jsonp'
+       });
+  }, 2000)
+  
+  
   Template.reddit.page = function () {
     r = Reddit.find();
     var v = null;
@@ -31,9 +55,9 @@ if (Meteor.is_client) {
       v = reddit;
       dom = v['reddit']
     })
-    console.log("check");
+    
     Meteor.flush();
-    return dom;
+    return JSON.stringify(dom);
   };
 }
 
@@ -58,27 +82,27 @@ if (Meteor.is_server) {
     }).run();
   }
   
-  Meteor.setInterval(function(){
-    var options = {
-      host: 'www.reddit.com',
-      path: '/.json',
-      headers: {
-        'User-Agent': 'titmonkey smcgee'
-      }
-    };
-    
-    callback = function(response) {
-      var str = '';
-      response.on('data', function (chunk) {
-        str += chunk;
-      });
-      response.on('end', function () {
-        // console.log(str);
-        update(str);
-      });
-    }
-    
-    http.request(options, callback).end();    
+  // Meteor.setInterval(function(){
+    // var options = {
+    //   host: 'www.reddit.com',
+    //   path: '/.json',
+    //   headers: {
+    //     'User-Agent': 'titmonkey smcgee'
+    //   }
+    // };
+    // 
+    // callback = function(response) {
+    //   var str = '';
+    //   response.on('data', function (chunk) {
+    //     str += chunk;
+    //   });
+    //   response.on('end', function () {
+    //     // console.log(str);
+    //     update(str);
+    //   });
+    // }
+    // 
+    // http.request(options, callback).end();    
     
     // request('http://www.reddit.com/.json', function (error, response, body) {
     //   if (!error && response.statusCode == 200) {
@@ -89,5 +113,5 @@ if (Meteor.is_server) {
     //   }
     // })    
 
-  }, 2000)
+  // }, 2000)
 }
