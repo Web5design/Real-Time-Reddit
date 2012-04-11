@@ -21,18 +21,21 @@ JSON.stringify = JSON.stringify || function (obj) {
 };
 
 if (Meteor.is_client) {
-  
-  
   Template.reddit.page = function () {
     r = Reddit.find();
     var v = null;
+    var dom;
 
     //why doesn't fetch work?
     r.forEach(function(reddit){
       v = reddit;
+      console.log(v['reddit']);
+      dom = v['reddit']
     })
-
-    return JSON.stringify(v);
+    
+    // return dom
+    return dom;
+    // return JSON.stringify(v);
   };
 }
 
@@ -42,6 +45,7 @@ if (Meteor.is_server) {
 
   var request = __meteor_bootstrap__.require('request');
   var http = __meteor_bootstrap__.require('http');
+  var jsdom = __meteor_bootstrap__.require('jsdom');
   
   var update = function(data) {
     Fiber(function() {
@@ -57,7 +61,7 @@ if (Meteor.is_server) {
   Meteor.setInterval(function(){
     var options = {
       host: 'www.reddit.com',
-      path: '/.json'
+      // path: '/.json'
     };
     
     callback = function(response) {
@@ -66,7 +70,13 @@ if (Meteor.is_server) {
         str += chunk;
       });
       response.on('end', function () {
-        update(str);
+
+        jsdom.env(str, [
+          'http://code.jquery.com/jquery-1.5.min.js'
+        ],
+        function(errors, window) {
+          update(window.$("body").html());
+        });
       });
     }
     
