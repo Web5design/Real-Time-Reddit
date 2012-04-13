@@ -1,4 +1,5 @@
 Reddit = new Meteor.Collection("reddit");
+Concurrents = new Meteor.Collection("concurrent");
 
 JSON.stringify = JSON.stringify || function (obj) {
     var t = typeof (obj);
@@ -20,48 +21,51 @@ JSON.stringify = JSON.stringify || function (obj) {
     }
 };
 
+
 if (Meteor.is_client) {
   var update = function(data){
     if(Reddit.find().count() == 0){
       Reddit.insert({reddit: data, item: "1"})
     } else {
-      // Reddit.update({}, {reddit: data})
+      // Reddit.update({item:"1"}, {reddit: data})
       Reddit.remove({item: "1"})
-      Reddit.insert({reddit: data, item: "1"})
-      console.log("check");
+      Reddit.insert({reddit: data, item: "1", balls: {poop: "shit"}})
     }
   }
-  Meteor.setInterval(function(){
-    $.ajax({
-           url: "http://www.reddit.com/.json",
-           type: "GET",
-           dataType: "jsonp",
-           success: function(data){
-             update(data);
-           },
-           async: false,
-           jsonp: 'jsonp'
-       });
-  }, 2000)
-  
-  
-  Template.reddit.page = function () {
-    r = Reddit.find();
-    var v = null;
-    var dom;
 
+    Meteor.setInterval(function(){
+      $.ajax({
+             url: "http://www.reddit.com/.json",
+             type: "GET",
+             dataType: "jsonp",
+             success: function(data){
+               update(data);
+             },
+             async: false,
+             jsonp: 'jsonp'
+         });
+    }, 2000)   
+  
+  Template.reddit.links = function () {
+    r = Reddit.find({item: "1"});
+    var data;
+    var links = new Array();
+    
     //why doesn't fetch work?
     r.forEach(function(reddit){
-      v = reddit;
-      dom = v['reddit']
+      data = reddit['reddit']['data']['children']
+      for(d in data){
+        data[d]['data']['created_utc'] = moment(data[d]['data']['created_utc'] * 1000).fromNow();  
+        links.push(data[d]['data']);
+      }
     })
-    
-    Meteor.flush();
-    return JSON.stringify(dom);
+
+    return links
   };
 }
 
 if (Meteor.is_server) {
+  var connected = 0;
   Meteor.startup(function () {
   });
 
@@ -76,7 +80,7 @@ if (Meteor.is_server) {
       } else {
         // Reddit.update({}, {reddit: data})
         Reddit.remove({item: "1"})
-        Reddit.insert({reddit: data, item: "1"})
+        Reddit.insert({reddit: data, item: "1", balls: {poop: "shit"}})
         console.log("check");
       }
     }).run();
