@@ -29,7 +29,7 @@ if (Meteor.is_client) {
     } else {
       // Reddit.update({item:"1"}, {reddit: data})
       Reddit.remove({item: "1"})
-      Reddit.insert({reddit: data, item: "1", balls: {poop: "shit"}})
+      Reddit.insert({reddit: data, item: "1"})
     }
   }
 
@@ -72,20 +72,7 @@ if (Meteor.is_server) {
   var request = __meteor_bootstrap__.require('request');
   var http = __meteor_bootstrap__.require('http');
   var jsdom = __meteor_bootstrap__.require('jsdom');
-  
-  var update = function(data) {
-    Fiber(function() {
-      if(Reddit.find().count() == 0){
-        Reddit.insert({reddit: data, item: "1"})
-      } else {
-        // Reddit.update({}, {reddit: data})
-        Reddit.remove({item: "1"})
-        Reddit.insert({reddit: data, item: "1", balls: {poop: "shit"}})
-        console.log("check");
-      }
-    }).run();
-  }
-  
+    
   // Meteor.setInterval(function(){
     // var options = {
     //   host: 'www.reddit.com',
