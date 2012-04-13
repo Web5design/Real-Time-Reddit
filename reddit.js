@@ -68,9 +68,9 @@ if (Meteor.is_server) {
   Meteor.startup(function () {
   });
 
-  var request = __meteor_bootstrap__.require('request');
-  var http = __meteor_bootstrap__.require('http');
-  var jsdom = __meteor_bootstrap__.require('jsdom');
+  // var request = __meteor_bootstrap__.require('request');
+  // var http = __meteor_bootstrap__.require('http');
+  // var jsdom = __meteor_bootstrap__.require('jsdom');
     
   // Meteor.setInterval(function(){
     // var options = {
