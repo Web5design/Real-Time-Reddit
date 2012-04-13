@@ -26,12 +26,11 @@ if (Meteor.is_client) {
     if(Reddit.find().count() == 0){
       Reddit.insert({reddit: data, item: "1"})
     } else {
-      // Reddit.update({item:"1"}, {reddit: data})
-      Reddit.remove({item: "1"})
-      Reddit.insert({reddit: data, item: "1"})
+      Reddit.update({item:"1"}, {$set: {reddit: data}})
     }
   }
 
+  var start = function(){
     Meteor.setInterval(function(){
       $.ajax({
              url: "http://www.reddit.com/.json",
@@ -44,6 +43,7 @@ if (Meteor.is_client) {
              jsonp: 'jsonp'
          });
     }, 2000)   
+  }
   
   Template.reddit.links = function () {
     r = Reddit.find({item: "1"});
