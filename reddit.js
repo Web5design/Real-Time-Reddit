@@ -1,5 +1,4 @@
 Reddit = new Meteor.Collection("reddit");
-Concurrents = new Meteor.Collection("concurrent");
 
 JSON.stringify = JSON.stringify || function (obj) {
     var t = typeof (obj);
